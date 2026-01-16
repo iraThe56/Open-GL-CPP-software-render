@@ -1,10 +1,13 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+
+
 #include <iostream>
 #include "shader.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -12,7 +15,11 @@ void processInput(GLFWwindow *window);
 
 // settings
 const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+const unsigned int SCR_HEIGHT = 800;
+
+int get_cell_buffer_index(int curent_x, int curent_y,int bufferWidth){
+    return curent_y * bufferWidth + curent_x  ;
+};
 
 int main()
 {
@@ -80,34 +87,112 @@ int main()
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
-    int bufferWidth = 800;
-    int bufferHeight = 800;
+    int bufferWidth = 300;
+    int bufferHeight = 300;
     auto *imageData = new unsigned char[bufferWidth * bufferHeight * 4];
     unsigned int texture;
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, bufferWidth, bufferHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
+
     glGenerateMipmap(GL_TEXTURE_2D);
 
     // render loop
     // -----------
+    double lastTime = glfwGetTime();
+    int nbFrames = 0;
+    int number = 0;
+    glfwInit();
+
+    // int check_neighbor_cell(int curent_x,int curent_y,int shift_y, int shift_x,old_buffer,  cell_buffer) {
+    //
+    //
+    // };
+ // cell state buffer
+
+    auto *cell_buffer = new bool[bufferWidth * bufferHeight];
+
+
+    for (int y = 0; y < bufferHeight; y++) {
+        for (int x = 0; x < bufferWidth; x++) {
+            int index = get_cell_buffer_index(x, y, bufferWidth);
+            cell_buffer[index] = static_cast<bool>((y-150) & (x-150));
+        };
+    };
+
+
     while (!glfwWindowShouldClose(window))
     {
         // input
         // -----
         processInput(window);
 
-        double time = glfwGetTime();
+        number=(glfwGetTimerValue()/(glfwGetTimerFrequency()/5));
+
+
+        double currentTime = glfwGetTime();
+        nbFrames++;
+        if ( currentTime - lastTime >= 1.0 ){ // If last prinf() was more than 1 sec ago
+            // printf and reset timer
+            printf("%f frames/sec, %f ms/frame\n", double(nbFrames), 1000.0/double(nbFrames));
+            nbFrames = 0;
+            lastTime += 1.0;
+        }
+        double xpos, ypos;
+        //getting cursor position
+        glfwGetCursorPos(window, &xpos, &ypos);
+        int xpos_int=xpos;int int_ypos=ypos;
+        int time=glfwGetTime();
+        // std::cout<< number  <<std::endl;
+
+
+
 
         for (int y = 0; y < bufferHeight; y++) {
             for (int x = 0; x < bufferWidth; x++) {
                 int index = (y * bufferWidth + x) * 4; // 4 channels (RGBA)
+                int previous_index=index;
+                // if (x >= 1 && x < bufferWidth && y >= 0 && y < bufferHeight) {
+                //     int previous_index = (y-1 * bufferWidth + x-1) * 4;
+                // }
 
-                auto value = static_cast<unsigned char>(x^y);
+                int value=1;
+                // auto value = static_cast<unsigned char>(x&y);
+                // red=imageData[index]
+                int moved_x=x-150;
+                int moved_y=y-150;
+                int value1 = abs(sin(int(sqrt((moved_x*moved_x+moved_y*moved_y))/10)^number))*255;
+                // value=value1;
+                //
+                value = (value1-moved_x+y)&number;
+                value = value^moved_x-value^moved_y;
+                value = (value+sqrt((x*x+y*y)));
+                value = value+(sin(moved_y/10)+cos(moved_x/10));
+                value=value^value1;
+                // int value2=0;
+                // value2=imageData[previous_index];
+                //
+                // value = value^number;
+                // value=(value-(.1*(value-value2)));
+                // value = 100*sin(x/10)-y;
+                // int value2 = -100*sin(x/10)-y;
+                // value = value^value2;
+                // value = value;
+                int cell_index=get_cell_buffer_index(x,y,bufferWidth);
+
+                value=cell_buffer[cell_index]*255;
+                int value1 = abs(sin(int(sqrt((moved_x*moved_x+moved_y*moved_y))/10)^number))*255;
+                value = value^value1;
+
+
+
+
                 imageData[index] = value;     // Red
                 imageData[index + 1] = value; // Green
                 imageData[index + 2] = value; // Blue
@@ -146,6 +231,7 @@ int main()
     glDeleteTextures(1, &texture);
 
     delete[] imageData;
+    delete[] cell_buffer;
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------

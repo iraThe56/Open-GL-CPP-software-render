@@ -12,6 +12,7 @@ GameBoard::GameBoard(int width, int height, char behavior) {
     board_height = height;
     board_behavior = behavior;
     board = new bool[board_width * board_height];
+    current_index = 0;
 }
 GameBoard::~GameBoard() {
     delete [] board;
@@ -22,29 +23,39 @@ GameBoard::~GameBoard() {
 int GameBoard::return_height() const {return board_height;}
 int GameBoard::return_width() const {return board_width;}
 
-int GameBoard::return_board_buffer_index(int current_x, int current_y) {
-    current_x=((current_x % board_width) + board_width) % board_width;
-    current_y=((current_y % board_height) + board_height) % board_height;
-    if (current_y<0)
-        std::cout<<"Out of bounds!"<<std::endl;
+int GameBoard::return_board_buffer_index(const int current_x, const int current_y) const {
+    // current_x=((current_x % board_width) + board_width) % board_width;
+    // current_y=((current_y % board_height) + board_height) % board_height;
     return (current_y * board_width + current_x)  ;
 }
 
 
-bool GameBoard::return_cell_value(int x,int y) {
-    int position= return_board_buffer_index(x,y);
+bool GameBoard::return_cell_value(const int x, const int y) const {
+    const int position= return_board_buffer_index(x,y);
     return(board[position]);
 }
+void GameBoard::set_current_index(int x,int y) {
+    current_index= return_board_buffer_index(x,y);
+}
+bool GameBoard::return_next_cell_value() {
+    current_index += 1;
+    return(board[current_index-1]);
 
-
-void GameBoard::set_cell_value(int x,int y,bool value) {
-    int position= return_board_buffer_index(x,y);
-    board[position]=value;
 }
 
-bool GameBoard::return_neighbor_cell_value(int current_x, int current_y,int x_offset,int y_offset) {
-    int shiftedX = current_x + x_offset;
-    int shiftedY = current_y + y_offset;
+
+void GameBoard::set_cell_value(const int x, const int y, const bool value) const {
+    const int position= return_board_buffer_index(x,y);
+    board[position]=value;
+}
+void GameBoard::set_next_cell_value(const bool value) {
+    current_index += 1;
+    board[current_index-1]=value;
+}
+
+bool GameBoard::return_neighbor_cell_value(const int current_x, const int current_y, const int x_offset, const int y_offset) const {
+    const int shiftedX = current_x + x_offset;
+    const int shiftedY = current_y + y_offset;
     return return_cell_value(shiftedX,shiftedY);
 }
 

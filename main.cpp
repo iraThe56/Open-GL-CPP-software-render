@@ -89,8 +89,8 @@ int main()
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
-    int bufferWidth = 300;
-    int bufferHeight = 300;
+    int bufferWidth = 1000;
+    int bufferHeight = 1000;
     auto *imageData = new unsigned char[bufferWidth * bufferHeight * 4];
     unsigned int texture;
     glGenTextures(1, &texture);
@@ -119,8 +119,8 @@ int main()
 
     for (int y = 0; y < bufferHeight; y++) {
         for (int x = 0; x < bufferWidth; x++) {
-            bool value=bool(y&x);
-            last_cell_buffer.set_cell_value(x,y,value);
+            bool value=round(sin((x&y)/10));
+            last_cell_buffer.set_next_cell_value(value);
         }
     }
 
@@ -134,69 +134,89 @@ int main()
         // -----
         processInput(window);
 
-        number=(glfwGetTimerValue()/(glfwGetTimerFrequency()/5));
+        number=(glfwGetTimerValue()/(glfwGetTimerFrequency()/30));
 
         fpsCounter.calculate_fps();
+        //getting cursor position
+        glfwGetCursorPos(window, &xpos, &ypos);
+
+
+
+
+        glfwGetWindowSize(window, &window_width, &window_height);
+
+        float scaled_x =float(curent_cell_buffer.return_width())/ float(window_width);
+        float scaled_y =float(curent_cell_buffer.return_height())/float( window_height);
+
+
+        //last_cell_buffer.set_cell_value(int(xpos*scaled_x),int((1-ypos)*scaled_y),true);
 
 
 
 
         int time=glfwGetTime();
-        // std::cout<< number  <<std::endl;
+        bool update=true;
 
-        if (last_number<number) {
+        if (update==true) {
+            if (last_number<number) {
 
-            int width=curent_cell_buffer.return_width();
-            int height=curent_cell_buffer.return_height();
-            for (int y = 0; y < height; y++) {
-                for (int x = 0; x < width; x++) {
-                    int numberOfNearbyCells=0;
-                    // bool value=last_cell_buffer.return_neighbor_cell_value(x,y,-1,-1);
-                    // curent_cell_buffer.set_cell_value(x,y,value);
-                    numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,-1,-1);
-                    numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,0,-1);
-                    numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,1,-1);
-                    numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,-1,0);
-                    numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,1,0);
-                    numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,-1,1);
-                    numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,0,1);
-                    numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,1,1);
-                    std::cout << numberOfNearbyCells << std::endl;
-                    bool value=false;
-                    if (last_cell_buffer.return_cell_value(x,y)==true) {
-                        if (numberOfNearbyCells < 2 ) {
-                            value=false;
-                        }
-                        else if (numberOfNearbyCells > 3 ) {
-                            value=false;
+                int width=curent_cell_buffer.return_width();
+                int height=curent_cell_buffer.return_height();
+                last_cell_buffer.set_current_index(0,0);
+                curent_cell_buffer.set_current_index(0,0);
+                for (int y = 0; y < height; y++) {
+                    for (int x = 0; x < width; x++) {
+                        int numberOfNearbyCells=0;
+                        // bool value=last_cell_buffer.return_neighbor_cell_value(x,y,-1,-1);
+                        // curent_cell_buffer.set_cell_value(x,y,value);
+                        numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,-1,-1);
+                        numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,0,-1);
+                        numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,1,-1);
+                        numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,-1,0);
+                        numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,1,0);
+                        numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,-1,1);
+                        numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,0,1);
+                        numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,1,1);
+
+                        bool value=false;
+                        if (last_cell_buffer.return_cell_value(x,y)==true) {
+                            if (numberOfNearbyCells < 2 ) {
+                                value=false;
+                            }
+                            else if (numberOfNearbyCells > 3 ) {
+                                value=false;
+                            }
+                            else {
+                                value=true;
+                            }
+
                         }
                         else {
-                            value=true;
+                            if (numberOfNearbyCells ==3 ) {
+                                value=true;
+                            }
                         }
+                        curent_cell_buffer.set_next_cell_value(value);
+
 
                     }
-                    else {
-                        if (numberOfNearbyCells ==3 ) {
-                            value=true;
-                        }
+                }
+                last_cell_buffer.set_current_index(0,0);
+                curent_cell_buffer.set_current_index(0,0);
+                for (int y = 0; y < height; y++) {
+                    for (int x = 0; x < width; x++) {
+                        last_cell_buffer.set_next_cell_value(curent_cell_buffer.return_next_cell_value());
                     }
-                    curent_cell_buffer.set_cell_value(x,y,value);
-
-
                 }
-            }
-            for (int y = 0; y < height; y++) {
-                for (int x = 0; x < width; x++) {
-                    last_cell_buffer.set_cell_value(x,y,curent_cell_buffer.return_cell_value(x,y));
-                }
-            }
 
-            last_number=number;
+                last_number=number;
+            }
         }
 
 
 
 
+        curent_cell_buffer.set_current_index(0,0);
         for (int y = 0; y < bufferHeight; y++) {
             for (int x = 0; x < bufferWidth; x++) {
                 int index = (y * bufferWidth + x) * 4; // 4 channels (RGBA)
@@ -206,7 +226,7 @@ int main()
 
                 int moved_x=x-150;
                 int moved_y=y-150;
-                value=curent_cell_buffer.return_cell_value(x,y)*255;
+                value=curent_cell_buffer.return_next_cell_value()*255;
 
 
                 imageData[index] = value;     // Red

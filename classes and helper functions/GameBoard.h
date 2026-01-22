@@ -14,17 +14,25 @@ class GameBoard {
     bool* board;
     int return_height() const;
     int return_width() const;
-    int return_board_buffer_index(int current_x, int current_y);
 
-    bool return_cell_value(int x,int y);
-    void set_cell_value(int x, int y, bool value);
+    int return_board_buffer_index(int current_x, int current_y) const;
 
-    bool return_neighbor_cell_value(int current_x, int current_y,int x_offset,int y_offset);
+    void set_current_index(int x,int y);
+    void set_next_cell_value(bool value);
+
+    bool return_cell_value(int x,int y) const;
+
+    bool return_next_cell_value();
+
+    void set_cell_value(int x, int y, bool value) const;
+
+    bool return_neighbor_cell_value(int current_x, int current_y,int x_offset,int y_offset) const;
 
 
 private:
     int board_width,board_height;
     char board_behavior;
+    int current_index;
 
 
 

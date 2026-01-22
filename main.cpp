@@ -129,7 +129,7 @@ int main()
 
     for (int y = 0; y < bufferHeight; y++) {
         for (int x = 0; x < bufferWidth; x++) {
-            bool value=x%y;
+            bool value=x&y;
             cell_buffer.set_cell_value(x,y,value);
         }
     }

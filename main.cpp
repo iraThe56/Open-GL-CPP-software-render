@@ -22,18 +22,6 @@ unsigned int SCR_HEIGHT = 800;
 
 
 
-// int get_cell_buffer_index(int curent_x, int curent_y,int bufferWidth,int buffer_height){
-//     curent_x=curent_x % bufferWidth;
-//     curent_y=curent_y % buffer_height;
-//     return (curent_y * bufferWidth + curent_x)  ;
-// };
-
-// int check_neighbor_cell(int curent_x,int curent_y,int shift_y, int shift_x,old_buffer,  cell_buffer) {
-//
-//     int position=get_cell_buffer_index(curent_x,)
-//
-//
-// };
 auto fpsCounter=FPSCounter();
 int main()
 {
@@ -121,18 +109,26 @@ int main()
     // -----------
 
     int number = 0;
+    int last_number=0;
     glfwInit();
 
 
  // cell state buffer
-    auto cell_buffer = GameBoard(bufferWidth,bufferWidth);
+    auto curent_cell_buffer = GameBoard(bufferWidth,bufferWidth);
+    auto last_cell_buffer = GameBoard(bufferWidth,bufferHeight);
 
     for (int y = 0; y < bufferHeight; y++) {
         for (int x = 0; x < bufferWidth; x++) {
-            bool value=x&y;
-            cell_buffer.set_cell_value(x,y,value);
+            bool value=false;
+            int shifted_x=x-bufferWidth/2;
+            int shifted_y=y-bufferHeight/2;
+            if (shifted_x*shifted_x+shifted_y*shifted_y<1000) {
+                value=true;
+            }
+            last_cell_buffer.set_cell_value(x,y,value);
         }
     }
+
 
 
 
@@ -153,6 +149,53 @@ int main()
         int time=glfwGetTime();
         // std::cout<< number  <<std::endl;
 
+        if (last_number<number) {
+            int numberOfNearbyCells=0;
+            int width=curent_cell_buffer.return_width();
+            int height=curent_cell_buffer.return_height();
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    bool value=last_cell_buffer.return_neighbor_cell_value(x,y,1,1);
+                    curent_cell_buffer.set_cell_value(x,y,value);
+
+                    // // numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,-1,-1);
+                    // // numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,0,-1);
+                    // // numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,1,-1);
+                    // // numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,-1,0);
+                    // // numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,0,0);
+                    // // numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,1,0);
+                    // // numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,-1,1);
+                    // // numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,0,1);
+                    // // numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,1,1);
+                    // if (last_cell_buffer.return_cell_value(x,y)==true) {
+                    //     if (numberOfNearbyCells < 2 ) {
+                    //         curent_cell_buffer.set_cell_value(x,y,false);
+                    //     }
+                    //
+                    //     if (numberOfNearbyCells > 3 ) {
+                    //         curent_cell_buffer.set_cell_value(x,y,false);
+                    //     }
+                    //     else {
+                    //         curent_cell_buffer.set_cell_value(x,y,true);
+                    //     }
+                    //
+                    // }
+                    // else {
+                    //     if (numberOfNearbyCells ==3 ) {
+                    //         curent_cell_buffer.set_cell_value(x,y,true);
+                    //     }
+                    // }
+
+
+
+                }
+            }
+            last_number=number;
+        }
+
+
+
+
         for (int y = 0; y < bufferHeight; y++) {
             for (int x = 0; x < bufferWidth; x++) {
                 int index = (y * bufferWidth + x) * 4; // 4 channels (RGBA)
@@ -162,7 +205,7 @@ int main()
 
                 int moved_x=x-150;
                 int moved_y=y-150;
-                value=cell_buffer.return_cell_value(x,y)*255;
+                value=curent_cell_buffer.return_cell_value(x,y)*255;
 
 
                 imageData[index] = value;     // Red
@@ -171,6 +214,7 @@ int main()
                 imageData[index + 3] = 255; // Alpha
             }
         }
+        last_cell_buffer=curent_cell_buffer;
 
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, bufferWidth, bufferHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
         glGenerateMipmap(GL_TEXTURE_2D);

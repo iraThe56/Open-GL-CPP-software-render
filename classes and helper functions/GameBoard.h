@@ -13,12 +13,12 @@ class GameBoard {
     ~GameBoard();
     int return_height() const;
     int return_width() const;
-    int get_board_buffer_index(int current_x, int current_y);
+    int return_board_buffer_index(int current_x, int current_y);
 
     bool return_cell_value(int x,int y);
     void set_cell_value(int x, int y, bool value);
 
-    bool return_neighbor_cell_value();
+    bool return_neighbor_cell_value(int current_x, int current_y,int x_offset,int y_offset);
 
 
 private:

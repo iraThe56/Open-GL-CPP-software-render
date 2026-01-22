@@ -11,6 +11,7 @@ class GameBoard {
     public:
     GameBoard(int width,int height,char behavior=0);
     ~GameBoard();
+    bool* board;
     int return_height() const;
     int return_width() const;
     int return_board_buffer_index(int current_x, int current_y);
@@ -24,7 +25,7 @@ class GameBoard {
 private:
     int board_width,board_height;
     char board_behavior;
-    bool* board;
+
 
 
 };

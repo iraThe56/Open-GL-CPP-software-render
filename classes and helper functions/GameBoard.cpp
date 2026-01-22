@@ -25,6 +25,8 @@ int GameBoard::return_width() const {return board_width;}
 int GameBoard::return_board_buffer_index(int current_x, int current_y) {
     current_x=((current_x % board_width) + board_width) % board_width;
     current_y=((current_y % board_height) + board_height) % board_height;
+    if (current_y<0)
+        std::cout<<"Out of bounds!"<<std::endl;
     return (current_y * board_width + current_x)  ;
 }
 

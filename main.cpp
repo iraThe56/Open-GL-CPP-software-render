@@ -114,24 +114,20 @@ int main()
 
 
  // cell state buffer
-    auto curent_cell_buffer = GameBoard(bufferWidth,bufferWidth);
-    auto last_cell_buffer = GameBoard(bufferWidth,bufferHeight);
+    GameBoard curent_cell_buffer =  GameBoard(bufferWidth,bufferHeight);
+    GameBoard last_cell_buffer =  GameBoard(bufferWidth,bufferHeight);
 
     for (int y = 0; y < bufferHeight; y++) {
         for (int x = 0; x < bufferWidth; x++) {
-            bool value=false;
-            int shifted_x=x-bufferWidth/2;
-            int shifted_y=y-bufferHeight/2;
-            if (shifted_x*shifted_x+shifted_y*shifted_y<1000) {
-                value=true;
-            }
+            bool value=bool(y&x);
             last_cell_buffer.set_cell_value(x,y,value);
         }
     }
 
 
 
-
+    double xpos, ypos;
+    int window_width, window_height;
     while (!glfwWindowShouldClose(window))
     {
         // input
@@ -142,54 +138,59 @@ int main()
 
         fpsCounter.calculate_fps();
 
-        double xpos, ypos;
-        //getting cursor position
-        glfwGetCursorPos(window, &xpos, &ypos);
-        int xpos_int=xpos;int int_ypos=ypos;
+
+
+
         int time=glfwGetTime();
         // std::cout<< number  <<std::endl;
 
         if (last_number<number) {
-            int numberOfNearbyCells=0;
+
             int width=curent_cell_buffer.return_width();
             int height=curent_cell_buffer.return_height();
             for (int y = 0; y < height; y++) {
                 for (int x = 0; x < width; x++) {
-                    bool value=last_cell_buffer.return_neighbor_cell_value(x,y,1,1);
+                    int numberOfNearbyCells=0;
+                    // bool value=last_cell_buffer.return_neighbor_cell_value(x,y,-1,-1);
+                    // curent_cell_buffer.set_cell_value(x,y,value);
+                    numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,-1,-1);
+                    numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,0,-1);
+                    numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,1,-1);
+                    numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,-1,0);
+                    numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,1,0);
+                    numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,-1,1);
+                    numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,0,1);
+                    numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,1,1);
+                    std::cout << numberOfNearbyCells << std::endl;
+                    bool value=false;
+                    if (last_cell_buffer.return_cell_value(x,y)==true) {
+                        if (numberOfNearbyCells < 2 ) {
+                            value=false;
+                        }
+                        else if (numberOfNearbyCells > 3 ) {
+                            value=false;
+                        }
+                        else {
+                            value=true;
+                        }
+
+                    }
+                    else {
+                        if (numberOfNearbyCells ==3 ) {
+                            value=true;
+                        }
+                    }
                     curent_cell_buffer.set_cell_value(x,y,value);
-
-                    // // numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,-1,-1);
-                    // // numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,0,-1);
-                    // // numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,1,-1);
-                    // // numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,-1,0);
-                    // // numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,0,0);
-                    // // numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,1,0);
-                    // // numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,-1,1);
-                    // // numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,0,1);
-                    // // numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,1,1);
-                    // if (last_cell_buffer.return_cell_value(x,y)==true) {
-                    //     if (numberOfNearbyCells < 2 ) {
-                    //         curent_cell_buffer.set_cell_value(x,y,false);
-                    //     }
-                    //
-                    //     if (numberOfNearbyCells > 3 ) {
-                    //         curent_cell_buffer.set_cell_value(x,y,false);
-                    //     }
-                    //     else {
-                    //         curent_cell_buffer.set_cell_value(x,y,true);
-                    //     }
-                    //
-                    // }
-                    // else {
-                    //     if (numberOfNearbyCells ==3 ) {
-                    //         curent_cell_buffer.set_cell_value(x,y,true);
-                    //     }
-                    // }
-
 
 
                 }
             }
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    last_cell_buffer.set_cell_value(x,y,curent_cell_buffer.return_cell_value(x,y));
+                }
+            }
+
             last_number=number;
         }
 
@@ -214,7 +215,8 @@ int main()
                 imageData[index + 3] = 255; // Alpha
             }
         }
-        last_cell_buffer=curent_cell_buffer;
+
+
 
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, bufferWidth, bufferHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
         glGenerateMipmap(GL_TEXTURE_2D);

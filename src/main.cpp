@@ -7,8 +7,8 @@
 #include "shader.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
-#include "classes and helper functions/FPSCounter.h"
-#include "classes and helper functions/GameBoard.h"
+#include "core/FPSCounter.h"
+#include "core/GameBoard.h"
 
 
 
@@ -121,6 +121,11 @@ int main()
         for (int x = 0; x < bufferWidth; x++) {
             bool value=round(sin((x&y)/10));
             last_cell_buffer.set_next_cell_value(value);
+        //     int shiftedX = x -bufferWidth / 2;
+        //     int shiftedY = y -bufferHeight / 2;
+        //     if (shiftedX*shiftedX+shiftedY*shiftedY < 100) {
+        //         last_cell_buffer.set_cell_value(x,y,true);
+        //     }
         }
     }
 
@@ -179,7 +184,7 @@ int main()
                         numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,1,1);
 
                         bool value=false;
-                        if (last_cell_buffer.return_cell_value(x,y)==true) {
+                        if (last_cell_buffer.return_next_cell_value()==true) {
                             if (numberOfNearbyCells < 2 ) {
                                 value=false;
                             }

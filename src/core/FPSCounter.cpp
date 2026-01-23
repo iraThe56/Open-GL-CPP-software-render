@@ -2,7 +2,7 @@
 // Created by Ira Evetts on 1/15/26.
 //
 
-#include "FPSCounter.h"
+#include "../FPSCounter.h"
 
 #include <cstdio>
 #include <glad/glad.h>

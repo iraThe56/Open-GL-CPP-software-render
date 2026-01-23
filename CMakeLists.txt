@@ -6,14 +6,14 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0")
 
 set(SOURCE_FILES main.cpp GLAD/src/glad.c
-        "classes and helper functions/GameBoard.cpp"
-        "classes and helper functions/GameBoard.h")
+        "src/GameBoard.cpp"
+        "src/GameBoard.h")
 set(HEADER_FILES shader.h
-        "classes and helper functions/FPSCounter.cpp"
-        "classes and helper functions/FPSCounter.h"
-        "classes and helper functions/GlfwSetup.cpp"
-        "classes and helper functions/GlfwSetup.h"
-        "classes and helper functions/GameBoard.h")
+        "src/FPSCounter.cpp"
+        "src/FPSCounter.h"
+        "src/GlfwSetup.cpp"
+        "src/GlfwSetup.h"
+        "src/GameBoard.h")
 
 include_directories(include)
 include_directories(GLAD/include)
@@ -23,8 +23,8 @@ include_directories(classes and helper functions)
 add_subdirectory(dependencies)
 
 add_executable(OpenGLSetup ${SOURCE_FILES} ${HEADER_FILES}
-        "classes and helper functions/GameBoard.cpp"
-        "classes and helper functions/GameBoard.h")
+        "src/GameBoard.cpp"
+        "src/GameBoard.h")
 target_link_libraries(OpenGLSetup glfw)
 
 # Put the exe in build/<CONFIG> (Debug/Release)

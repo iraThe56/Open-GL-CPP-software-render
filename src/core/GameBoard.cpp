@@ -2,7 +2,7 @@
 // Created by Ira Evetts on 1/21/26.
 //
 
-#include "../GameBoard.h"
+#include "GameBoard.h"
 
 #include <iostream>
 #include <__ostream/basic_ostream.h>

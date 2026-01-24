@@ -1,18 +1,14 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-
-
 #include <iostream>
 #include "shader.h"
 #define STB_IMAGE_IMPLEMENTATION
+
 #include "stb_image.h"
 #include "core/FPSCounter.h"
 #include "core/GameBoard.h"
-
-
-
-
+#include "core/imgui/ImguiManager.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -20,11 +16,9 @@ void processInput(GLFWwindow *window);
 // settings
 unsigned int SCR_WIDTH = 800;
 unsigned int SCR_HEIGHT = 800;
+FPSCounter fpsCounter = FPSCounter();
+ImguiManager* imgui = ImguiManager::getInstance();
 
-
-
-
-auto fpsCounter=FPSCounter();
 int main()
 {
     // glfw: initialize and configure
@@ -54,6 +48,8 @@ int main()
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
+
+    imgui->init(window);
 
     Shader blitShader("resources/shaders/blit.vsh", "resources/shaders/blit.fsh");
 
@@ -93,7 +89,7 @@ int main()
 
     int bufferWidth = 300;
     int bufferHeight = 300;
-    auto *imageData = new unsigned char[bufferWidth * bufferHeight * 4];
+    uint8_t *imageData = new uint8_t[bufferWidth * bufferHeight * 4];
     unsigned int texture;
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
@@ -163,9 +159,8 @@ int main()
 
 
         int time=glfwGetTime();
-        bool update=true;
 
-        if (update==true) {
+        if (imgui->shouldUpdate[0]) {
             if (last_number<timePassed) {
 
                 int width=current_cell_buffer.return_width();
@@ -264,6 +259,8 @@ int main()
         glBindVertexArray(blitVAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
+        imgui->render();
+
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
@@ -281,7 +278,7 @@ int main()
     delete[] imageData;
 
 
-
+    imgui->destroy();
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------

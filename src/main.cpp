@@ -110,7 +110,7 @@ int main()
     // render loop
     // -----------
 
-    int number = 0;
+    int timePassed = 0;
     int last_number=0;
     glfwInit();
 
@@ -119,22 +119,17 @@ int main()
     GameBoard current_cell_buffer =  GameBoard(bufferWidth,bufferHeight);
     GameBoard last_cell_buffer =  GameBoard(bufferWidth,bufferHeight);
 
-    // for (int y = 0; y < bufferHeight; y++) {
-    //     for (int x = 0; x < bufferWidth; x++) {
-    //
-    //         // int shiftedX = x -bufferWidth / 2;
-    //         // int shiftedY = y -bufferHeight / 2;
-    //         // bool value=round(sin((sqrt((shiftedX*shiftedX)&shiftedY*shiftedY))/10));
-    //         // last_cell_buffer.set_next_cell_value(value);
-    //         // int shiftedX = x -bufferWidth / 2;
-    //         // int shiftedY = y -bufferHeight / 2;
-    //         // if (shiftedX*shiftedX+shiftedY*shiftedY < 100) {
-    //         //     last_cell_buffer.set_cell_value(x,y,true);
-    //         // }
-    //         }
-    // }
-    last_cell_buffer.set_cell_value(bufferHeight/2,bufferWidth/2,true);
-    // last_cell_buffer.set_cell_value(0,0,f);
+    for (int y = 0; y < bufferHeight; y++) {
+        for (int x = 0; x < bufferWidth; x++) {
+
+            int shiftedX = x -bufferWidth / 2;
+            int shiftedY = y -bufferHeight / 2;
+            bool value=round(sin((sqrt((shiftedX*shiftedX)&shiftedY*shiftedY))/10));
+            last_cell_buffer.set_next_cell_value(value);
+
+            }
+    }
+
 
 
     double xpos, ypos;
@@ -145,9 +140,12 @@ int main()
         // -----
         processInput(window);
 
-        number=(glfwGetTimerValue()/(glfwGetTimerFrequency()/20));
+        timePassed=(glfwGetTimerValue()/(glfwGetTimerFrequency()/20));
 
         fpsCounter.calculate_fps();
+
+
+
         //getting cursor position
         glfwGetCursorPos(window, &xpos, &ypos);
 
@@ -160,8 +158,7 @@ int main()
         float scaled_y =float(current_cell_buffer.return_height())/float( window_height);
 
 
-         // last_cell_buffer.set_cell_value(int(xpos*scaled_x),int((1-ypos)*scaled_y),true);
-
+         last_cell_buffer.set_cell_value(int(xpos*scaled_x),int((1-ypos)*scaled_y),true);
 
 
 
@@ -169,7 +166,7 @@ int main()
         bool update=true;
 
         if (update==true) {
-            if (last_number<number) {
+            if (last_number<timePassed) {
 
                 int width=current_cell_buffer.return_width();
                 int height=current_cell_buffer.return_height();
@@ -177,26 +174,25 @@ int main()
                 current_cell_buffer.set_current_index(0,0);
                 for (int y = 0; y < height; y++) {
                     for (int x = 0; x < width; x++) {
-                        int numberOfNearbyCells=2;
-                        // bool value=last_cell_buffer.return_neighbor_cell_value(x,y,-1,-1);
-                        // curent_cell_buffer.set_cell_value(x,y,value);
-                        numberOfNearbyCells -= last_cell_buffer.return_neighbor_cell_value(x,y,-1,-1);
+                        int numberOfNearbyCells=0;
+                        numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,-1,-1);
                         numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,0,-1);
-                        numberOfNearbyCells -= last_cell_buffer.return_neighbor_cell_value(x,y,1,-1);
+                        numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,1,-1);
+
                         numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,-1,0);
+
                         numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,1,0);
-                        // numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,0,0);
-                        numberOfNearbyCells -= last_cell_buffer.return_neighbor_cell_value(x,y,-1,1);
+
+                        numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,-1,1);
                         numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,0,1);
-                        numberOfNearbyCells -= last_cell_buffer.return_neighbor_cell_value(x,y,1,1);
-                        numberOfNearbyCells *= 1+last_cell_buffer.return_neighbor_cell_value(x,y,-2,-1);
+                        numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,1,1);
 
                         bool value=false;
                         if (last_cell_buffer.return_next_cell_value()==true) {
-                            if (numberOfNearbyCells < 2 ) {
+                            if (numberOfNearbyCells < 2) {
                                 value=false;
                             }
-                            else if (numberOfNearbyCells >8 ) {
+                            else if (numberOfNearbyCells >3 ) {
                                 value=false;
                             }
                             else {
@@ -222,7 +218,7 @@ int main()
                     }
                 }
 
-                last_number=number;
+                last_number=timePassed;
             }
         }
 

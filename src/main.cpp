@@ -91,8 +91,8 @@ int main()
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
-    int bufferWidth = 1000;
-    int bufferHeight = 1000;
+    int bufferWidth = 300;
+    int bufferHeight = 300;
     auto *imageData = new unsigned char[bufferWidth * bufferHeight * 4];
     unsigned int texture;
     glGenTextures(1, &texture);
@@ -116,21 +116,25 @@ int main()
 
 
  // cell state buffer
-    GameBoard curent_cell_buffer =  GameBoard(bufferWidth,bufferHeight);
+    GameBoard current_cell_buffer =  GameBoard(bufferWidth,bufferHeight);
     GameBoard last_cell_buffer =  GameBoard(bufferWidth,bufferHeight);
 
-    for (int y = 0; y < bufferHeight; y++) {
-        for (int x = 0; x < bufferWidth; x++) {
-            bool value=round(sin((x&y)/10));
-            last_cell_buffer.set_next_cell_value(value);
-        //     int shiftedX = x -bufferWidth / 2;
-        //     int shiftedY = y -bufferHeight / 2;
-        //     if (shiftedX*shiftedX+shiftedY*shiftedY < 100) {
-        //         last_cell_buffer.set_cell_value(x,y,true);
-        //     }
-        }
-    }
-
+    // for (int y = 0; y < bufferHeight; y++) {
+    //     for (int x = 0; x < bufferWidth; x++) {
+    //
+    //         // int shiftedX = x -bufferWidth / 2;
+    //         // int shiftedY = y -bufferHeight / 2;
+    //         // bool value=round(sin((sqrt((shiftedX*shiftedX)&shiftedY*shiftedY))/10));
+    //         // last_cell_buffer.set_next_cell_value(value);
+    //         // int shiftedX = x -bufferWidth / 2;
+    //         // int shiftedY = y -bufferHeight / 2;
+    //         // if (shiftedX*shiftedX+shiftedY*shiftedY < 100) {
+    //         //     last_cell_buffer.set_cell_value(x,y,true);
+    //         // }
+    //         }
+    // }
+    last_cell_buffer.set_cell_value(bufferHeight/2,bufferWidth/2,true);
+    // last_cell_buffer.set_cell_value(0,0,f);
 
 
     double xpos, ypos;
@@ -141,7 +145,7 @@ int main()
         // -----
         processInput(window);
 
-        number=(glfwGetTimerValue()/(glfwGetTimerFrequency()/30));
+        number=(glfwGetTimerValue()/(glfwGetTimerFrequency()/20));
 
         fpsCounter.calculate_fps();
         //getting cursor position
@@ -152,11 +156,11 @@ int main()
 
         glfwGetWindowSize(window, &window_width, &window_height);
 
-        float scaled_x =float(curent_cell_buffer.return_width())/ float(window_width);
-        float scaled_y =float(curent_cell_buffer.return_height())/float( window_height);
+        float scaled_x =float(current_cell_buffer.return_width())/ float(window_width);
+        float scaled_y =float(current_cell_buffer.return_height())/float( window_height);
 
 
-        //last_cell_buffer.set_cell_value(int(xpos*scaled_x),int((1-ypos)*scaled_y),true);
+         // last_cell_buffer.set_cell_value(int(xpos*scaled_x),int((1-ypos)*scaled_y),true);
 
 
 
@@ -167,30 +171,32 @@ int main()
         if (update==true) {
             if (last_number<number) {
 
-                int width=curent_cell_buffer.return_width();
-                int height=curent_cell_buffer.return_height();
+                int width=current_cell_buffer.return_width();
+                int height=current_cell_buffer.return_height();
                 last_cell_buffer.set_current_index(0,0);
-                curent_cell_buffer.set_current_index(0,0);
+                current_cell_buffer.set_current_index(0,0);
                 for (int y = 0; y < height; y++) {
                     for (int x = 0; x < width; x++) {
-                        int numberOfNearbyCells=0;
+                        int numberOfNearbyCells=2;
                         // bool value=last_cell_buffer.return_neighbor_cell_value(x,y,-1,-1);
                         // curent_cell_buffer.set_cell_value(x,y,value);
-                        numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,-1,-1);
+                        numberOfNearbyCells -= last_cell_buffer.return_neighbor_cell_value(x,y,-1,-1);
                         numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,0,-1);
-                        numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,1,-1);
+                        numberOfNearbyCells -= last_cell_buffer.return_neighbor_cell_value(x,y,1,-1);
                         numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,-1,0);
                         numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,1,0);
-                        numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,-1,1);
+                        // numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,0,0);
+                        numberOfNearbyCells -= last_cell_buffer.return_neighbor_cell_value(x,y,-1,1);
                         numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,0,1);
-                        numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,1,1);
+                        numberOfNearbyCells -= last_cell_buffer.return_neighbor_cell_value(x,y,1,1);
+                        numberOfNearbyCells *= 1+last_cell_buffer.return_neighbor_cell_value(x,y,-2,-1);
 
                         bool value=false;
                         if (last_cell_buffer.return_next_cell_value()==true) {
                             if (numberOfNearbyCells < 2 ) {
                                 value=false;
                             }
-                            else if (numberOfNearbyCells > 3 ) {
+                            else if (numberOfNearbyCells >8 ) {
                                 value=false;
                             }
                             else {
@@ -203,16 +209,16 @@ int main()
                                 value=true;
                             }
                         }
-                        curent_cell_buffer.set_next_cell_value(value);
+                        current_cell_buffer.set_next_cell_value(value);
 
 
                     }
                 }
                 last_cell_buffer.set_current_index(0,0);
-                curent_cell_buffer.set_current_index(0,0);
+                current_cell_buffer.set_current_index(0,0);
                 for (int y = 0; y < height; y++) {
                     for (int x = 0; x < width; x++) {
-                        last_cell_buffer.set_next_cell_value(curent_cell_buffer.return_next_cell_value());
+                        last_cell_buffer.set_next_cell_value(current_cell_buffer.return_next_cell_value());
                     }
                 }
 
@@ -223,21 +229,22 @@ int main()
 
 
 
-        curent_cell_buffer.set_current_index(0,0);
+        current_cell_buffer.set_current_index(0,0);
         for (int y = 0; y < bufferHeight; y++) {
             for (int x = 0; x < bufferWidth; x++) {
                 int index = (y * bufferWidth + x) * 4; // 4 channels (RGBA)
 
 
                 int value=1;
+                int value2=0;
 
                 int moved_x=x-150;
                 int moved_y=y-150;
-                value=curent_cell_buffer.return_next_cell_value()*255;
 
+                value=current_cell_buffer.return_next_cell_value()*125;
 
                 imageData[index] = value;     // Red
-                imageData[index + 1] = value; // Green
+                imageData[index + 1] =value ; // Green
                 imageData[index + 2] = value; // Blue
                 imageData[index + 3] = 255; // Alpha
             }

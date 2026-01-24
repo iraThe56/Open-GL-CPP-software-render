@@ -32,6 +32,7 @@ void ImguiManager::render() {
     ImGui::Begin("Hello Ira :3");
     ImGui::Text("It works!");
     ImGui::Checkbox("Should Update?", shouldUpdate);
+    ImGui::Checkbox("Should Draw?", shouldDraw);
     ImGui::End();
 
     ImGui::Render();

@@ -9,6 +9,7 @@ public:
     static ImguiManager* getInstance();
 
     bool* shouldUpdate = new bool(false);
+    bool* shouldDraw = new bool(false);
 
     void init(GLFWwindow *window );
     void render();

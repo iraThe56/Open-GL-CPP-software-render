@@ -19,6 +19,7 @@ unsigned int SCR_HEIGHT = 800;
 FPSCounter fpsCounter = FPSCounter();
 ImguiManager* imgui = ImguiManager::getInstance();
 
+
 int main()
 {
     // glfw: initialize and configure
@@ -110,6 +111,11 @@ int main()
     int last_number=0;
     glfwInit();
 
+    int value= -7;
+    int mod_value=5;
+    int result= value % mod_value;
+
+
 
  // cell state buffer
     GameBoard current_cell_buffer =  GameBoard(bufferWidth,bufferHeight);
@@ -154,7 +160,10 @@ int main()
         float scaled_y =float(current_cell_buffer.return_height())/float( window_height);
 
 
-         last_cell_buffer.set_cell_value(int(xpos*scaled_x),int((1-ypos)*scaled_y),true);
+        if (imgui->shouldDraw[0]) {
+            last_cell_buffer.set_cell_value(int(xpos*scaled_x),int((1-ypos)*scaled_y),true);
+            current_cell_buffer.set_cell_value(int(xpos*scaled_x),int((1-ypos)*scaled_y),true);
+        }
 
 
 

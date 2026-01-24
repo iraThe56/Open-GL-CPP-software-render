@@ -55,7 +55,7 @@ int main()
         return -1;
     }
 
-    Shader blitShader("shaders/blit.vsh", "shaders/blit.fsh");
+    Shader blitShader("resources/shaders/blit.vsh", "resources/shaders/blit.fsh");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------

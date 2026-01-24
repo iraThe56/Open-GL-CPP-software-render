@@ -5,7 +5,6 @@
 #include "GameBoard.h"
 
 #include <iostream>
-#include <__ostream/basic_ostream.h>
 
 GameBoard::GameBoard(int width, int height, char behavior) {
     board_width = width;

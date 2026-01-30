@@ -20,12 +20,14 @@ class GameBoard {
     void set_current_index(int x,int y);
     void set_next_cell_value(float value);
 
+
+
     float return_cell_value(int x,int y) const;
 
     float return_next_cell_value();
 
     void set_cell_value(int x, int y, float value) const;
-    void add_cell_value(int x, int y, float value);
+    void add_cell_value(int x, int y, float value) const;
 
     float return_neighbor_cell_value(int current_x, int current_y,int x_offset,int y_offset) const;
 
@@ -35,7 +37,6 @@ private:
     int board_width,board_height;
     char board_behavior;
     int current_index;
-
 
 
 };

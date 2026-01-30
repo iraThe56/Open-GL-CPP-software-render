@@ -51,6 +51,10 @@ void GameBoard::set_next_cell_value(const float value) {
     current_index += 1;
 
 }
+void GameBoard::add_cell_value(const int x, const int y, const float value) const {
+    board[return_board_buffer_index(x,y)]+=value;
+}
+
 
 float GameBoard::return_neighbor_cell_value(const int current_x, const int current_y, const int x_offset, const int y_offset) const {
     return return_cell_value(current_x + x_offset,current_y + y_offset);

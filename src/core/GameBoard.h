@@ -11,22 +11,24 @@ class GameBoard {
     public:
     GameBoard(int width,int height,char behavior=0);
     ~GameBoard();
-    unsigned char* board;
+    float* board;
     int return_height() const;
     int return_width() const;
 
     int return_board_buffer_index(int current_x, int current_y) const;
 
     void set_current_index(int x,int y);
-    void set_next_cell_value(unsigned char value);
+    void set_next_cell_value(float value);
 
-    unsigned char return_cell_value(int x,int y) const;
+    float return_cell_value(int x,int y) const;
 
-    unsigned char return_next_cell_value();
+    float return_next_cell_value();
 
-    void set_cell_value(int x, int y, unsigned char value) const;
+    void set_cell_value(int x, int y, float value) const;
+    void add_cell_value(int x, int y, float value);
 
-    unsigned char return_neighbor_cell_value(int current_x, int current_y,int x_offset,int y_offset) const;
+    float return_neighbor_cell_value(int current_x, int current_y,int x_offset,int y_offset) const;
+
 
 
 private:

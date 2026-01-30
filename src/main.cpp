@@ -126,7 +126,7 @@ int main()
 
             int shiftedX = x -bufferWidth / 2;
             int shiftedY = y -bufferHeight / 2;
-            bool value=round(sin((sqrt((shiftedX*shiftedX)&shiftedY*shiftedY))/10));
+            uint8_t value=round(sin((sqrt((shiftedX*shiftedX)&shiftedY*shiftedY))/10));
             last_cell_buffer.set_next_cell_value(value);
 
             }
@@ -161,8 +161,8 @@ int main()
 
 
         if (imgui->shouldDraw[0]) {
-            last_cell_buffer.set_cell_value(int(xpos*scaled_x),int((1-ypos)*scaled_y),true);
-            current_cell_buffer.set_cell_value(int(xpos*scaled_x),int((1-ypos)*scaled_y),true);
+            last_cell_buffer.set_cell_value(int(xpos*scaled_x),int((1-ypos)*scaled_y),120);
+            current_cell_buffer.set_cell_value(int(xpos*scaled_x),int((1-ypos)*scaled_y),120);
         }
 
 
@@ -179,36 +179,37 @@ int main()
                 for (int y = 0; y < height; y++) {
                     for (int x = 0; x < width; x++) {
                         int numberOfNearbyCells=0;
-                        numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,-1,-1);
-                        numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,0,-1);
-                        numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,1,-1);
-
-                        numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,-1,0);
-
-                        numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,1,0);
-
-                        numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,-1,1);
-                        numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,0,1);
-                        numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,1,1);
-
-                        bool value=false;
-                        if (last_cell_buffer.return_next_cell_value()==true) {
-                            if (numberOfNearbyCells < 2) {
-                                value=false;
-                            }
-                            else if (numberOfNearbyCells >3 ) {
-                                value=false;
-                            }
-                            else {
-                                value=true;
-                            }
-
-                        }
-                        else {
-                            if (numberOfNearbyCells ==3 ) {
-                                value=true;
-                            }
-                        }
+                        // numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,-1,-1);
+                        // numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,0,-1);
+                        // numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,1,-1);
+                        //
+                        // numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,-1,0);
+                        //
+                        // numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,1,0);
+                        //
+                        // numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,-1,1);
+                        // numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,0,1);
+                        // numberOfNearbyCells += last_cell_buffer.return_neighbor_cell_value(x,y,1,1);
+                        //
+                        // bool value=false;
+                        // if (last_cell_buffer.return_next_cell_value()==true) {
+                        //     if (numberOfNearbyCells < 2) {
+                        //         value=false;
+                        //     }
+                        //     else if (numberOfNearbyCells >3 ) {
+                        //         value=false;
+                        //     }
+                        //     else {
+                        //         value=true;
+                        //     }
+                        //
+                        // }
+                        // else {
+                        //     if (numberOfNearbyCells ==3 ) {
+                        //         value=true;
+                        //     }
+                        // }
+                        value=last_cell_buffer.return_next_cell_value();
                         current_cell_buffer.set_next_cell_value(value);
 
 
@@ -241,7 +242,7 @@ int main()
                 int moved_x=x-150;
                 int moved_y=y-150;
 
-                value=current_cell_buffer.return_next_cell_value()*125;
+                value=current_cell_buffer.return_next_cell_value();
 
                 imageData[index] = value;     // Red
                 imageData[index + 1] =value ; // Green

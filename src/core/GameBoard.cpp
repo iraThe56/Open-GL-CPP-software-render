@@ -10,7 +10,7 @@ GameBoard::GameBoard(int width, int height, char behavior) {
     board_width = width;
     board_height = height;
     board_behavior = behavior;
-    board = new uint8_t[board_width * board_height];
+    board = new float[board_width * board_height];
     current_index = 0;
 }
 GameBoard::~GameBoard() {
@@ -29,30 +29,30 @@ int GameBoard::return_board_buffer_index( int current_x,  int current_y) const {
 }
 
 
-uint8_t GameBoard::return_cell_value(const int x, const int y) const {
+float GameBoard::return_cell_value(const int x, const int y) const {
     const int position= return_board_buffer_index(x,y);
     return(board[position]);
 }
 void GameBoard::set_current_index(int x,int y) {
     current_index= return_board_buffer_index(x,y);
 }
-uint8_t GameBoard::return_next_cell_value() {
+float GameBoard::return_next_cell_value() {
     current_index += 1;
     return(board[current_index-1]);
 
 }
 
 
-void GameBoard::set_cell_value(const int x, const int y, const uint8_t value) const {
+void GameBoard::set_cell_value(const int x, const int y, const float value) const {
     board[return_board_buffer_index(x,y)]=value;
 }
-void GameBoard::set_next_cell_value(const uint8_t value) {
+void GameBoard::set_next_cell_value(const float value) {
     board[current_index]=value;
     current_index += 1;
 
 }
 
-uint8_t GameBoard::return_neighbor_cell_value(const int current_x, const int current_y, const int x_offset, const int y_offset) const {
+float GameBoard::return_neighbor_cell_value(const int current_x, const int current_y, const int x_offset, const int y_offset) const {
     return return_cell_value(current_x + x_offset,current_y + y_offset);
 }
 
